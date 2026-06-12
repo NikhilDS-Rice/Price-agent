@@ -34,6 +34,11 @@ Important rules:
 - If a page is blocked, don't retry it — move on
 - If search returns no results, try a slightly different query (more/less specific)
 - Do not make up prices — only report what tools return
+
+Optional:
+- You may call search_web to check reviews or recent news about the product if it
+  would help the recommendation. This is optional and does not replace
+  search_products or compare_and_rank.
 """
 
 
@@ -65,7 +70,7 @@ def run_agent(product: str, verbose: bool = False) -> dict:
     while tool_call_count < max_tool_calls:
         with Live(Spinner("dots", text=" Thinking..."), console=console, refresh_per_second=10):
             response = client.messages.create(
-                model="claude-haiku-4-5-20251001",
+                model="claude-opus-4-5",
                 max_tokens=4096,
                 system=SYSTEM_PROMPT,
                 tools=TOOL_DEFINITIONS,

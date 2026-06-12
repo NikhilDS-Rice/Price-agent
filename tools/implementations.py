@@ -101,6 +101,61 @@ def _fmt_rating(item: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Tool: search_web
+# ---------------------------------------------------------------------------
+
+def search_web(query: str, num_results: int = 5) -> dict:
+    """
+    Calls SerpAPI's general Google search to find reviews, articles, and
+    other context about a product. Returns title/link/snippet for each result.
+    """
+    api_key = os.getenv("SERP_API_KEY")
+    if not api_key:
+        return {"error": "SERP_API_KEY not set in environment."}
+
+    num_results = min(num_results, MAX_RESULTS)
+    console.print(f"  [dim]→ Web search: [italic]{query}[/italic][/dim]")
+
+    try:
+        resp = httpx.get(
+            "https://serpapi.com/search",
+            params={
+                "engine": "google",
+                "q": query,
+                "num": num_results,
+                "api_key": api_key,
+                "gl": "us",
+                "hl": "en",
+            },
+            timeout=TIMEOUT,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except httpx.TimeoutException:
+        return {"error": "SerpAPI request timed out."}
+    except httpx.HTTPStatusError as e:
+        return {"error": f"SerpAPI returned HTTP {e.response.status_code}"}
+    except Exception as e:
+        return {"error": f"Search failed: {str(e)}"}
+
+    organic_results = data.get("organic_results", [])
+    if not organic_results:
+        return {"error": "No results found. Try a different query.", "raw_query": query}
+
+    results = []
+    for item in organic_results[:num_results]:
+        results.append({
+            "title": item.get("title", ""),
+            "link": item.get("link", ""),
+            "snippet": item.get("snippet", ""),
+            "source": item.get("source", ""),
+        })
+
+    console.print(f"  [dim]→ Found {len(results)} web results[/dim]")
+    return {"results": results, "total_found": len(results)}
+
+
+# ---------------------------------------------------------------------------
 # Tool 2: fetch_product_page
 # ---------------------------------------------------------------------------
 

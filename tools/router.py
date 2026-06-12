@@ -3,7 +3,7 @@ Tool router — maps Claude's tool_use calls to Python implementations.
 """
 
 import json
-from tools.implementations import search_products, fetch_product_page, compare_and_rank
+from tools.implementations import search_products, fetch_product_page, compare_and_rank, search_web
 
 
 def run_tool(name: str, inputs: dict) -> str:
@@ -18,6 +18,8 @@ def run_tool(name: str, inputs: dict) -> str:
             result = fetch_product_page(**inputs)
         elif name == "compare_and_rank":
             result = compare_and_rank(**inputs)
+        elif name == "search_web":
+            result = search_web(**inputs)
         else:
             result = {"error": f"Unknown tool: {name}"}
     except TypeError as e:

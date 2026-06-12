@@ -87,5 +87,32 @@ TOOL_DEFINITIONS = [
             },
             "required": ["product_name", "results"]
         }
+    },
+    {
+        "name": "search_web",
+        "description": (
+            "General-purpose web search (not shopping-specific). "
+            "Use this to find reviews, comparisons, or recent news about a product "
+            "that could inform the recommendation. Optional — does not replace "
+            "search_products or compare_and_rank."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": (
+                        "The web search query, e.g. 'Sony WH-1000XM5 review' "
+                        "or 'best wireless headphones 2026'."
+                    )
+                },
+                "num_results": {
+                    "type": "integer",
+                    "description": "How many results to return (max 10). Default 5.",
+                    "default": 5
+                }
+            },
+            "required": ["query"]
+        }
     }
 ]
