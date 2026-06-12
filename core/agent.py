@@ -65,7 +65,7 @@ def run_agent(product: str, verbose: bool = False) -> dict:
     while tool_call_count < max_tool_calls:
         with Live(Spinner("dots", text=" Thinking..."), console=console, refresh_per_second=10):
             response = client.messages.create(
-                model="claude-opus-4-5",
+                model="claude-haiku-4-5-20251001",
                 max_tokens=4096,
                 system=SYSTEM_PROMPT,
                 tools=TOOL_DEFINITIONS,
