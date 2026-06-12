@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Results — {{ product }}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+    a.back { color: #1a7f37; text-decoration: none; }
+    .answer { background: #f6f8fa; border-radius: 8px; padding: 1rem 1.25rem; white-space: pre-wrap; margin: 1.5rem 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #eee; }
+    th { background: #f6f8fa; }
+    tr.best { background: #e6f4ea; font-weight: bold; }
+    .trend-down { color: #1a7f37; font-weight: bold; }
+    .trend-up { color: #9a6700; font-weight: bold; }
+    .trend-same { color: #666; }
+  </style>
+</head>
+<body>
+  <a class="back" href="/">&larr; New search</a>
+  <h1>{{ product }}</h1>
+
+  {% if final_answer %}
+  <div class="answer">{{ final_answer }}</div>
+  {% endif %}
+
+  {% if trend %}
+  <p>
+    {% if trend.direction == "down" %}
+    <span class="trend-down">Price dropped: ${{ "%.2f"|format(trend.current_price) }}
+      (down ${{ "%.2f"|format(trend.change|abs) }}, {{ "%.1f"|format(trend.change_pct|abs) }}%)
+      since {{ trend.previous_date[:10] }} when it was ${{ "%.2f"|format(trend.previous_price) }}</span>
+    {% elif trend.direction == "up" %}
+    <span class="trend-up">Price increased: ${{ "%.2f"|format(trend.current_price) }}
+      (up ${{ "%.2f"|format(trend.change) }}, {{ "%.1f"|format(trend.change_pct) }}%)
+      since {{ trend.previous_date[:10] }} when it was ${{ "%.2f"|format(trend.previous_price) }}</span>
+    {% else %}
+    <span class="trend-same">Price unchanged at ${{ "%.2f"|format(trend.current_price) }}
+      since {{ trend.previous_date[:10] }}</span>
+    {% endif %}
+  </p>
+  {% endif %}
+
+  {% if comparison and comparison.ranked_results %}
+  <h2>Price comparison</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Store</th>
+        <th>Price</th>
+        <th>Rating</th>
+        <th>Shipping</th>
+        <th>In stock</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in comparison.ranked_results %}
+      <tr class="{{ 'best' if r.is_best_deal else '' }}">
+        <td>{{ "★ 1" if r.is_best_deal else (r.rank or "—") }}</td>
+        <td>{{ r.store }}</td>
+        <td>{{ r.price }}</td>
+        <td>{{ r.rating or "—" }}</td>
+        <td>{{ r.shipping or "—" }}</td>
+        <td>{{ "Yes" if r.in_stock else "No" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if comparison.price_range %}
+  <p>Price range across stores: {{ comparison.price_range }}</p>
+  {% endif %}
+  {% endif %}
+</body>
+</html>
