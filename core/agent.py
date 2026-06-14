@@ -34,6 +34,11 @@ Important rules:
 - If a page is blocked, don't retry it — move on
 - If search returns no results, try a slightly different query (more/less specific)
 - Do not make up prices — only report what tools return
+
+Optional:
+- You may call search_web to check reviews or recent news about the product if it
+  would help the recommendation. This is optional and does not replace
+  search_products or compare_and_rank.
 """
 
 

@@ -98,6 +98,35 @@ def render_comparison_table(comparison: dict) -> None:
         )
 
 
+def render_price_trend(trend: dict | None) -> None:
+    """Print a one-line note about how the best price has changed since last check."""
+    if not trend:
+        return
+
+    prev_price = trend["previous_price"]
+    curr_price = trend["current_price"]
+    change = trend["change"]
+    change_pct = trend["change_pct"]
+    prev_date = trend["previous_date"][:10]
+
+    if trend["direction"] == "down":
+        console.print(
+            f"\n  [bold green]Price dropped:[/bold green] "
+            f"${curr_price:.2f} (down ${abs(change):.2f}, {abs(change_pct):.1f}%) "
+            f"since {prev_date} when it was ${prev_price:.2f}"
+        )
+    elif trend["direction"] == "up":
+        console.print(
+            f"\n  [bold yellow]Price increased:[/bold yellow] "
+            f"${curr_price:.2f} (up ${change:.2f}, {change_pct:.1f}%) "
+            f"since {prev_date} when it was ${prev_price:.2f}"
+        )
+    else:
+        console.print(
+            f"\n  [dim]Price unchanged at ${curr_price:.2f} since {prev_date}[/dim]"
+        )
+
+
 def save_result(run: dict, output_dir: str = "output") -> Path:
     """Save the full run to a JSON file for inspection or future use."""
     Path(output_dir).mkdir(exist_ok=True)

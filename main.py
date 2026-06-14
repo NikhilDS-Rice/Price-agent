@@ -17,7 +17,14 @@ from rich.console import Console
 load_dotenv()  # loads .env file if present
 
 from core.agent import run_agent
-from output.renderer import render_result, render_comparison_table, save_result, extract_comparison_from_run
+from output.renderer import (
+    render_result,
+    render_comparison_table,
+    render_price_trend,
+    save_result,
+    extract_comparison_from_run,
+)
+from memory.store import append_snapshot, load_history, get_price_trend
 
 console = Console()
 
@@ -74,6 +81,12 @@ Examples:
     comparison = extract_comparison_from_run(run)
     if comparison:
         render_comparison_table(comparison)
+
+        # Record this result and show how the price has changed since last time
+        append_snapshot(args.product, comparison)
+        history = load_history(args.product)
+        trend = get_price_trend(args.product, history)
+        render_price_trend(trend)
 
     # Optionally save
     if args.save:
